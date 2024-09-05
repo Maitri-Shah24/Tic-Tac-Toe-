@@ -4,49 +4,62 @@ public class Main {
     static ArrayList<Integer> playerPositions = new ArrayList<>();
     static ArrayList<Integer> cpuPositions = new ArrayList<>();
     public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        System.out.println("Bore ho rahe ho? To chalo game khelte hai..\uD83C\uDFB2");
+        System.out.println("So, tell me what's your name?");
+        String playerName = s.nextLine();
+        boolean playAgain = true;
 
-        char [][] board = {{' ','|',' ','|',' '},
-                {'-','+','-','+','-'},
-                {' ','|',' ','|',' '},
-                {'-','+','-','+','-'},
-                {' ','|',' ','|',' '}};
-        printBoard(board);
-
-        while (true)
+        while (playAgain)
         {
-            Scanner s = new Scanner(System.in);
-            System.out.println("Enter the number where you want to place your dice (1-9)");
-            int playerPos =  s.nextInt();
-            while(playerPositions.contains(playerPos) || cpuPositions.contains(playerPos))
-            {
-                System.out.println("Position taken! Enter a correct position");
-                playerPos = s.nextInt();
-            }
+            playerPositions.clear();
+            cpuPositions.clear();
 
-            placePiece(board, playerPos, "player");
-            String result = checkWinner();
-            if(result.length()>0)
-            {
-                System.out.println(result);
-                break;
-            }
-            Random rand = new Random();
-            int cpuPos = rand.nextInt(9)+ 1;
-            while(playerPositions.contains(cpuPos) || cpuPositions.contains(cpuPos))
-            {
-                cpuPos = rand.nextInt(9)+ 1;
-            }
-            placePiece(board, cpuPos, "cpu");
+            char [][] board = {{' ','|',' ','|',' '},
+                    {'-','+','-','+','-'},
+                    {' ','|',' ','|',' '},
+                    {'-','+','-','+','-'},
+                    {' ','|',' ','|',' '}};
             printBoard(board);
-            result = checkWinner();
-            if(result.length()>0)
+
+            while (true)
             {
-                System.out.println(result);
-                break;
+                System.out.println(playerName+ ", Where do you want to place(1-9)?");
+                int playerPos =  s.nextInt();
+                while(playerPositions.contains(playerPos) || cpuPositions.contains(playerPos))
+                {
+                    System.out.println("Already hai waha pe \uD83E\uDD26\u200D♀\uFE0F, chalo fir se apna dalo apna number");
+                    playerPos = s.nextInt();
+                }
+
+                placePiece(board, playerPos, "player");
+                String result = checkWinner(playerName);
+                if(result.length()>0)
+                {
+                    System.out.println(result);
+                    break;
+                }
+                Random rand = new Random();
+                int cpuPos = rand.nextInt(9)+ 1;
+                while(playerPositions.contains(cpuPos) || cpuPositions.contains(cpuPos))
+                {
+                    cpuPos = rand.nextInt(9)+ 1;
+                }
+                placePiece(board, cpuPos, "cpu");
+                printBoard(board);
+                result = checkWinner(playerName);
+                if(result.length()>0)
+                {
+                    System.out.println(result);
+                    break;
+                }
             }
-
-
+            System.out.println("Wanna play again?(Y/N)");
+            s.nextLine();
+            String response = s.nextLine();
+            playAgain = response.equalsIgnoreCase("Y");
         }
+        System.out.println("Okay, Bye bye!\uD83D\uDC4B\uD83C\uDFFB");
     }
     public static void printBoard(char[][] board)
     {
@@ -106,7 +119,7 @@ public class Main {
         }
 
     }
-    public static String checkWinner()
+    public static String checkWinner(String playerName)
     {
         List topRow = Arrays.asList(1, 2, 3);
         List midRow = Arrays.asList(4, 5, 6);
@@ -131,11 +144,11 @@ public class Main {
         {
             if(playerPositions.containsAll(l))
             {
-                return "Congratulations you won!!";
+                return "Congratulations " +playerName+ " you \uD83E\uDEF5 won!! \uD83C\uDFC6 ";
             }
             else if(cpuPositions.containsAll(l))
             {
-                return "Computer wins! Sorry:(";
+                return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" +playerName;
             } else if (playerPositions.size() + cpuPositions.size() == 9) {
                 return "TIE!";
             }
