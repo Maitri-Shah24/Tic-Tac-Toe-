@@ -17,19 +17,36 @@ public class Main {
             Scanner s = new Scanner(System.in);
             System.out.println("Enter the number where you want to place your dice (1-9)");
             int playerPos =  s.nextInt();
+            while(playerPositions.contains(playerPos) || cpuPositions.contains(playerPos))
+            {
+                System.out.println("Position taken! Enter a correct position");
+                playerPos = s.nextInt();
+            }
 
             placePiece(board, playerPos, "player");
+            String result = checkWinner();
+            if(result.length()>0)
+            {
+                System.out.println(result);
+                break;
+            }
             Random rand = new Random();
             int cpuPos = rand.nextInt(9)+ 1;
+            while(playerPositions.contains(cpuPos) || cpuPositions.contains(cpuPos))
+            {
+                cpuPos = rand.nextInt(9)+ 1;
+            }
             placePiece(board, cpuPos, "cpu");
             printBoard(board);
+            result = checkWinner();
+            if(result.length()>0)
+            {
+                System.out.println(result);
+                break;
+            }
 
-            String result = checkWinner();
-            System.out.println(result);
+
         }
-
-
-
     }
     public static void printBoard(char[][] board)
     {
@@ -116,7 +133,7 @@ public class Main {
             {
                 return "Congratulations you won!!";
             }
-            else if(cpuPositions.contains(l))
+            else if(cpuPositions.containsAll(l))
             {
                 return "Computer wins! Sorry:(";
             } else if (playerPositions.size() + cpuPositions.size() == 9) {
