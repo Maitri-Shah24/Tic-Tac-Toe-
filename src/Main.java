@@ -9,17 +9,22 @@ public class Main {
                 {' ','|',' ','|',' '},
                 {'-','+','-','+','-'},
                 {' ','|',' ','|',' '}};
-
-        Scanner s = new Scanner(System.in);
-        System.out.println("Enter the number where you want to place your dice (1-9)");
-        int pos =  s.nextInt();
-        System.out.println(pos);
-
-        placePiece(board, pos, "player");
-        Random rand = new Random();
-        int cpuPos = rand.nextInt(9)+ 1;
-        placePiece(board, cpuPos, "cpu");
         printBoard(board);
+
+        while (true)
+        {
+            Scanner s = new Scanner(System.in);
+            System.out.println("Enter the number where you want to place your dice (1-9)");
+            int playerPos =  s.nextInt();
+
+            placePiece(board, playerPos, "player");
+            Random rand = new Random();
+            int cpuPos = rand.nextInt(9)+ 1;
+            placePiece(board, cpuPos, "cpu");
+            printBoard(board);
+        }
+
+
 
     }
     public static void printBoard(char[][] board)
