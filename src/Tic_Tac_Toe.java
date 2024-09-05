@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Main {
+public class Tic_Tac_Toe {
     static ArrayList<Integer> playerPositions = new ArrayList<>();
     static ArrayList<Integer> cpuPositions = new ArrayList<>();
     public static void main(String[] args) {
