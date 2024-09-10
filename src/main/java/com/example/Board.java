@@ -5,6 +5,11 @@ import java.util.List;
 
 public class Board
 {
+
+    private static final char EMPTY_SPACE = ' ';
+    private static final char VERTICAL_DIVIDER = '|';
+    private static final char HORIZONTAL_DIVIDER = '-';
+    private static final char INTERSECTION = '+';
     private char[][] board;
 
     public Board() {
@@ -13,11 +18,11 @@ public class Board
 
     public void reset() {
         board = new char[][]{
-                {' ', '|', ' ', '|', ' '},
-                {'-', '+', '-', '+', '-'},
-                {' ', '|', ' ', '|', ' '},
-                {'-', '+', '-', '+', '-'},
-                {' ', '|', ' ', '|', ' '}
+                {EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE},
+                {HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER},
+                {EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE},
+                {HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER},
+                {EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE}
         };
     }
 
@@ -29,63 +34,40 @@ public class Board
             System.out.println();
         }
     }
-
-    public void placePiece(int pos, char symbol) {
+    public int[] getBoardPosition(int pos) {
         switch (pos) {
             case 1:
-                board[0][0] = symbol;
-                break;
+                return new int[]{0,0};
             case 2:
-                board[0][2] = symbol;
-                break;
+                return new int[]{0,2};
             case 3:
-                board[0][4] = symbol;
-                break;
+                return new int[]{0,4};
             case 4:
-                board[2][0] = symbol;
-                break;
+                return new int[]{2,0};
             case 5:
-                board[2][2] = symbol;
-                break;
+                return new int[]{2,2};
             case 6:
-                board[2][4] = symbol;
-                break;
+                return new int[]{2,4};
             case 7:
-                board[4][0] = symbol;
-                break;
+                return new int[]{4,0};
             case 8:
-                board[4][2] = symbol;
-                break;
+                return new int[]{4,2};
             case 9:
-                board[4][4] = symbol;
-                break;
+                return new int[]{4,4};
+            default:
+                return null;
         }
     }
 
+    public void placePiece(int pos, char symbol) {
+        int[] boardPosition = getBoardPosition(pos);
+        board[boardPosition[0]][boardPosition[1]] = symbol;
+    }
+
     public boolean isPositionTaken(int pos) {
-        char[] symbols = {'X', 'O'};
-        switch (pos) {
-            case 1:
-                return containsSymbol(board[0][0], symbols);
-            case 2:
-                return containsSymbol(board[0][2], symbols);
-            case 3:
-                return containsSymbol(board[0][4], symbols);
-            case 4:
-                return containsSymbol(board[2][0], symbols);
-            case 5:
-                return containsSymbol(board[2][2], symbols);
-            case 6:
-                return containsSymbol(board[2][4], symbols);
-            case 7:
-                return containsSymbol(board[4][0], symbols);
-            case 8:
-                return containsSymbol(board[4][2], symbols);
-            case 9:
-                return containsSymbol(board[4][4], symbols);
-            default:
-                return false;
-        }
+        int[] boardPosition = getBoardPosition(pos);
+        char cell = board[boardPosition[0]][boardPosition[1]];
+        return containsSymbol(cell, new char[]{'X','O'});
     }
 
     private boolean containsSymbol(char c, char[] symbols) {
