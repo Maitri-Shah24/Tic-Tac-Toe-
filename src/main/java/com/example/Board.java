@@ -1,6 +1,8 @@
 package com.example;
 
-import java.util.Arrays;
+import lombok.Getter;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Board
@@ -11,19 +13,31 @@ public class Board
     private static final char HORIZONTAL_DIVIDER = '-';
     private static final char INTERSECTION = '+';
     private char[][] board;
+    @Getter
+    private int size;
 
-    public Board() {
+
+    public Board(int size)
+    {
+        this.size = size;
         reset();
     }
 
     public void reset() {
-        board = new char[][]{
-                {EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE},
-                {HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER},
-                {EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE},
-                {HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER,INTERSECTION,HORIZONTAL_DIVIDER},
-                {EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE,VERTICAL_DIVIDER,EMPTY_SPACE}
-        };
+        board = new char[2 * size - 1][2 * size - 1];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (i % 2 == 0 && j % 2 == 0) {
+                    board[i][j] = EMPTY_SPACE;
+                } else if (i % 2 == 0) {
+                    board[i][j] = VERTICAL_DIVIDER;
+                } else if (j % 2 == 0) {
+                    board[i][j] = HORIZONTAL_DIVIDER;
+                } else {
+                    board[i][j] = INTERSECTION;
+                }
+            }
+        }
     }
 
     public void printBoard() {
@@ -35,28 +49,9 @@ public class Board
         }
     }
     public int[] getBoardPosition(int pos) {
-        switch (pos) {
-            case 1:
-                return new int[]{0,0};
-            case 2:
-                return new int[]{0,2};
-            case 3:
-                return new int[]{0,4};
-            case 4:
-                return new int[]{2,0};
-            case 5:
-                return new int[]{2,2};
-            case 6:
-                return new int[]{2,4};
-            case 7:
-                return new int[]{4,0};
-            case 8:
-                return new int[]{4,2};
-            case 9:
-                return new int[]{4,4};
-            default:
-                return null;
-        }
+        int row = (pos - 1)/size;
+        int col = (pos - 1)%size;
+        return new int[]{2*row,2*col};
     }
 
     public void placePiece(int pos, char symbol) {
@@ -66,8 +61,9 @@ public class Board
 
     public boolean isPositionTaken(int pos) {
         int[] boardPosition = getBoardPosition(pos);
-        char cell = board[boardPosition[0]][boardPosition[1]];
-        return containsSymbol(cell, new char[]{'X','O'});
+        return boardPosition[0] >= 0 && boardPosition[0] < board.length &&
+                boardPosition[1] >= 0 && boardPosition[1] < board[0].length &&
+                board[boardPosition[0]][boardPosition[1]] != EMPTY_SPACE;
     }
 
     private boolean containsSymbol(char c, char[] symbols) {
@@ -77,24 +73,84 @@ public class Board
         return false;
     }
 
-    public String checkWinner(List<Integer> playerPositions, List<Integer> cpuPositions, String playerName) {
-        List<List<Integer>> winningCombinations = Arrays.asList(
-                Arrays.asList(1, 2, 3), Arrays.asList(4, 5, 6), Arrays.asList(7, 8, 9),
-                Arrays.asList(1, 4, 7), Arrays.asList(2, 5, 8), Arrays.asList(3, 6, 9),
-                Arrays.asList(1, 5, 9), Arrays.asList(3, 5, 7)
-        );
 
-        for (List<Integer> combination : winningCombinations) {
-            if (playerPositions.containsAll(combination)) {
+    public String checkWinner(List<Integer> playerPositions, List<Integer> cpuPositions, String playerName)
+    {
+        // Check rows and columns
+        for (int i = 0; i < size; i++)
+        {
+            if (isWinningLine(getRowPositions(i), playerPositions))
+            {
                 return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
-            } else if (cpuPositions.containsAll(combination)) {
+            }
+            else if (isWinningLine(getRowPositions(i), cpuPositions))
+            {
                 return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
             }
         }
 
-        if (playerPositions.size() + cpuPositions.size() == 9) {
+        for (int i = 0; i < size; i++)
+        {
+            if (isWinningLine(getColumnPositions(i), playerPositions))
+            {
+                return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
+            }
+            else if (isWinningLine(getColumnPositions(i), cpuPositions))
+            {
+                return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
+            }
+        }
+
+            // Check diagonals
+        if (isWinningLine(getDiagonalPositions(true), playerPositions))
+        {
+            return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
+        }
+        else if (isWinningLine(getDiagonalPositions(true), cpuPositions)) {
+            return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
+        }
+
+        if (isWinningLine(getDiagonalPositions(false), playerPositions)) {
+            return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
+        } else if (isWinningLine(getDiagonalPositions(false), cpuPositions)) {
+            return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
+        }
+        if (playerPositions.size() + cpuPositions.size() == size * size) {
             return "TIE!";
         }
-        return "";
+
+            return "";
+        }
+
+        // Helper method to check if all positions in a line contain the same symbol
+        private boolean isWinningLine(List<Integer> linePositions, List<Integer> playerPositions) {
+            return playerPositions.containsAll(linePositions);
+        }
+
+        // Helper methods to get positions for rows, columns, and diagonals
+        private List<Integer> getRowPositions(int row) {
+            List<Integer> positions = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                positions.add(row * size + i + 1);
+            }
+            return positions;
+        }
+
+        private List<Integer> getColumnPositions(int column) {
+            List<Integer> positions = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                positions.add(i * size + column + 1);
+            }
+            return positions;
+        }
+
+        private List<Integer> getDiagonalPositions(boolean mainDiagonal) {
+            List<Integer> positions = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                int pos = mainDiagonal ? i * size + i + 1 : (i + 1) * size - i;
+                positions.add(pos);
+            }
+            return positions;
+        }
     }
-}
+

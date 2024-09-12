@@ -1,30 +1,22 @@
 package com.example;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CpuPlayer extends Player {
+public class CpuPlayer extends Player
+{
+    private MoveStrategy strategy;
 
-    private final Random random = new Random();
-
-    public CpuPlayer()
+    public CpuPlayer(MoveStrategy strategy,char symbol)
     {
-        super("CPU");
+        super("CPU",symbol);
+        this.strategy = strategy;
     }
 
     @Override
     public int makeMove(Board board)
     {
-        int pos = random.nextInt(9) +1;
-        while (board.isPositionTaken(pos))
-        {
-            pos = random.nextInt(9)+1;
-        }
-        return pos;
+        return strategy.makeMove(board);
     }
 }

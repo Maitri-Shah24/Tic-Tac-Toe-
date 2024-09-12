@@ -2,6 +2,8 @@ package com.example;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 @Getter
@@ -10,31 +12,36 @@ public class HumanPlayer extends Player {
 
     private final Scanner scanner = new Scanner(System.in);
 
-    public HumanPlayer(String name) {
-        super(name);
+    public HumanPlayer(String name, char symbol)
+    {
+        super(name,symbol);
     }
 
-    @Override
     public int makeMove(Board board) {
-
         int pos;
-        int[] boardPosition;
-
+        int boardSize = board.getSize();
+        int maxPos = boardSize * boardSize;
         while (true) {
-            System.out.println(getName() + ", Where do you want to place (1-9)?");
-            pos = scanner.nextInt();
-
-            boardPosition = board.getBoardPosition(pos);
-            if (boardPosition == null) {
-                System.out.println("Invalid position! Please enter a number between 1 and 9.");
-                continue;
-
-            }
-            while (board.isPositionTaken(pos)) {
-                System.out.println("Already hai waha pe \uD83E\uDD26\u200D♀\uFE0F, chalo fir se apna dalo apna number");
+            try {
+                System.out.println("Enter your move (1-" + (board.getSize() * board.getSize()) + "):");
                 pos = scanner.nextInt();
+
+                if (pos < 1 || pos > maxPos) {
+                    System.out.println("Invalid position! Please enter a number between 1 and 9.");
+                    continue;
+                }
+
+                if (board.isPositionTaken(pos)) {
+                    System.out.println("That position is already taken! Please choose another one.");
+                    continue;
+                }
+
+                return pos;
+
+            } catch (InputMismatchException e) {
+                System.out.println("Please enter a valid number.");
+                scanner.next();
             }
-            return pos;
         }
     }
 }
