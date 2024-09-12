@@ -1,13 +1,8 @@
 package com.example;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-@Getter
-@Setter
 public class HumanPlayer extends Player {
 
     private final Scanner scanner = new Scanner(System.in);

@@ -16,7 +16,6 @@ public class Board
     @Getter
     private int size;
 
-
     public Board(int size)
     {
         this.size = size;
@@ -66,17 +65,9 @@ public class Board
                 board[boardPosition[0]][boardPosition[1]] != EMPTY_SPACE;
     }
 
-    private boolean containsSymbol(char c, char[] symbols) {
-        for (char symbol : symbols) {
-            if (c == symbol) return true;
-        }
-        return false;
-    }
-
-
     public String checkWinner(List<Integer> playerPositions, List<Integer> cpuPositions, String playerName)
     {
-        // Check rows and columns
+        // Check rows
         for (int i = 0; i < size; i++)
         {
             if (isWinningLine(getRowPositions(i), playerPositions))
@@ -89,6 +80,7 @@ public class Board
             }
         }
 
+            //Check columnss
         for (int i = 0; i < size; i++)
         {
             if (isWinningLine(getColumnPositions(i), playerPositions))
@@ -100,7 +92,6 @@ public class Board
                 return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
             }
         }
-
             // Check diagonals
         if (isWinningLine(getDiagonalPositions(true), playerPositions))
         {
@@ -122,12 +113,10 @@ public class Board
             return "";
         }
 
-        // Helper method to check if all positions in a line contain the same symbol
         private boolean isWinningLine(List<Integer> linePositions, List<Integer> playerPositions) {
             return playerPositions.containsAll(linePositions);
         }
 
-        // Helper methods to get positions for rows, columns, and diagonals
         private List<Integer> getRowPositions(int row) {
             List<Integer> positions = new ArrayList<>();
             for (int i = 0; i < size; i++) {
