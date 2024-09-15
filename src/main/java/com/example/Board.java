@@ -5,8 +5,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Board
-{
+public class Board {
 
     private static final char EMPTY_SPACE = ' ';
     private static final char VERTICAL_DIVIDER = '|';
@@ -16,8 +15,7 @@ public class Board
     @Getter
     private int size;
 
-    public Board(int size)
-    {
+    public Board(int size) {
         this.size = size;
         reset();
     }
@@ -47,10 +45,11 @@ public class Board
             System.out.println();
         }
     }
+
     public int[] getBoardPosition(int pos) {
-        int row = (pos - 1)/size;
-        int col = (pos - 1)%size;
-        return new int[]{2*row,2*col};
+        int row = (pos - 1) / size;
+        int col = (pos - 1) % size;
+        return new int[]{2 * row, 2 * col};
     }
 
     public void placePiece(int pos, char symbol) {
@@ -65,81 +64,69 @@ public class Board
                 board[boardPosition[0]][boardPosition[1]] != EMPTY_SPACE;
     }
 
-    public String checkWinner(List<Integer> playerPositions, List<Integer> cpuPositions, String playerName)
-    {
+    public String checkWinner(List<Integer> playerPositions, List<Integer> cpuPositions, String playerName) {
         // Check rows
-        for (int i = 0; i < size; i++)
-        {
-            if (isWinningLine(getRowPositions(i), playerPositions))
-            {
-                return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
-            }
-            else if (isWinningLine(getRowPositions(i), cpuPositions))
-            {
-                return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
-            }
+        for (int i = 0; i < size; i++) {
+            String result = checkAndReturnWinner(getRowPositions(i), playerPositions, cpuPositions, playerName);
+            if (!result.isEmpty()) return result;
         }
 
-            //Check columnss
-        for (int i = 0; i < size; i++)
-        {
-            if (isWinningLine(getColumnPositions(i), playerPositions))
-            {
-                return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
-            }
-            else if (isWinningLine(getColumnPositions(i), cpuPositions))
-            {
-                return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
-            }
-        }
-            // Check diagonals
-        if (isWinningLine(getDiagonalPositions(true), playerPositions))
-        {
-            return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
-        }
-        else if (isWinningLine(getDiagonalPositions(true), cpuPositions)) {
-            return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
+        // Check columns
+        for (int i = 0; i < size; i++) {
+            String result = checkAndReturnWinner(getColumnPositions(i), playerPositions, cpuPositions, playerName);
+            if (!result.isEmpty()) return result;
         }
 
-        if (isWinningLine(getDiagonalPositions(false), playerPositions)) {
-            return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
-        } else if (isWinningLine(getDiagonalPositions(false), cpuPositions)) {
-            return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
-        }
+        // Check diagonals
+        String result = checkAndReturnWinner(getDiagonalPositions(true), playerPositions, cpuPositions, playerName);
+        if (!result.isEmpty()) return result;
+
+        result = checkAndReturnWinner(getDiagonalPositions(false), playerPositions, cpuPositions, playerName);
+        if (!result.isEmpty()) return result;
+
+        // If all positions are taken and there's no winner, it's a tie
         if (playerPositions.size() + cpuPositions.size() == size * size) {
             return "TIE!";
         }
 
-            return "";
-        }
-
-        private boolean isWinningLine(List<Integer> linePositions, List<Integer> playerPositions) {
-            return playerPositions.containsAll(linePositions);
-        }
-
-        private List<Integer> getRowPositions(int row) {
-            List<Integer> positions = new ArrayList<>();
-            for (int i = 0; i < size; i++) {
-                positions.add(row * size + i + 1);
-            }
-            return positions;
-        }
-
-        private List<Integer> getColumnPositions(int column) {
-            List<Integer> positions = new ArrayList<>();
-            for (int i = 0; i < size; i++) {
-                positions.add(i * size + column + 1);
-            }
-            return positions;
-        }
-
-        private List<Integer> getDiagonalPositions(boolean mainDiagonal) {
-            List<Integer> positions = new ArrayList<>();
-            for (int i = 0; i < size; i++) {
-                int pos = mainDiagonal ? i * size + i + 1 : (i + 1) * size - i;
-                positions.add(pos);
-            }
-            return positions;
-        }
+        return "";
     }
 
+    private String checkAndReturnWinner(List<Integer> positions, List<Integer> playerPositions, List<Integer> cpuPositions, String playerName) {
+        if (isWinningLine(positions, playerPositions)) {
+            return "Congratulations " + playerName + " you \uD83E\uDEF5 won!! \uD83C\uDFC6";
+        } else if (isWinningLine(positions, cpuPositions)) {
+            return "Computer wins! Sorry (\u2060 \u2060⚈̥\u2060⌢\u2060⚈̥\u2060)" + playerName;
+        }
+        return "";
+    }
+
+    private boolean isWinningLine(List<Integer> linePositions, List<Integer> playerPositions) {
+        return playerPositions.containsAll(linePositions);
+    }
+
+    private List<Integer> getRowPositions(int row) {
+        List<Integer> positions = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            positions.add(row * size + i + 1);
+        }
+        return positions;
+    }
+
+    private List<Integer> getColumnPositions(int column) {
+        List<Integer> positions = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            positions.add(i * size + column + 1);
+        }
+        return positions;
+    }
+
+    private List<Integer> getDiagonalPositions(boolean mainDiagonal) {
+        List<Integer> positions = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            int pos = mainDiagonal ? i * size + i + 1 : (i + 1) * size - i;
+            positions.add(pos);
+        }
+        return positions;
+    }
+}
