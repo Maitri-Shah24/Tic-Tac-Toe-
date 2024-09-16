@@ -1,13 +1,8 @@
 package com.example;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-@Getter
-@Setter
 public class HumanPlayer extends Player {
 
     private final Scanner scanner = new Scanner(System.in);
@@ -27,7 +22,7 @@ public class HumanPlayer extends Player {
                 pos = scanner.nextInt();
 
                 if (pos < 1 || pos > maxPos) {
-                    System.out.println("Invalid position! Please enter a number between 1 and 9.");
+                    System.out.println("Invalid position! Please enter a number between 1 and " +(board.getSize() * board.getSize()));
                     continue;
                 }
 

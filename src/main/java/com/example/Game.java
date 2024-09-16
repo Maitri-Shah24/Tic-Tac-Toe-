@@ -11,7 +11,7 @@ class Game {
 
     public Game() {
         System.out.println("Bored!Let's play a Game!!\uD83C\uDFB2");
-        System.out.println("Enter the grid size: (3 for 3x3, 4 for 4x4)");
+        System.out.println("Enter the grid size: (3 for 3x3, 4 for 4x4 etc)");
         int size;
         while (true)
         {
@@ -114,12 +114,14 @@ class Game {
         player.addPosition(pos);
         char symbol = player.getSymbol();
         board.placePiece(pos, symbol);
-        board.printBoard();
+
 
         if (player.equals(player1)) {
             System.out.println("==================="+player1.getName()+"'s Turn=================");
+            board.printBoard();
         } else {
             System.out.println("======================CPU's Turn====================");
+            board.printBoard();
         }
         if (checkWinner(player.getName())) {
             return true;
