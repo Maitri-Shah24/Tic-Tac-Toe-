@@ -4,90 +4,33 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 class Game {
-    private final Board board;
-    private final Player player1;
-    private final Player player2;
+    private Board board;
+    private Player player1;
+    private Player player2;
     private final Scanner scanner = new Scanner(System.in);
 
     public Game() {
-        System.out.println("Bored! Let's play a Game!! \uD83C\uDFB2");
-        System.out.println("Enter the grid size: (3 for 3x3, 4 for 4x4, etc)");
-        int size;
-        while (true) {
-            try {
-                size = scanner.nextInt();
-                scanner.nextLine();
-                if (size >= 3) {
-                    break;
-                } else {
-                    System.out.println("Grid size must be 3 or larger than 3");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input! Please enter a valid number");
-                scanner.nextLine();
-            }
-        }
+    }
+
+    public void initializeGame() {
+        System.out.println("Bored! Let's play a Game!! 🎲");
+        int size = askGridSize();
         board = new Board(size);
 
-        System.out.println("So, tell me what's your name?");
-        String playerName;
-        while (true) {
-            playerName = scanner.nextLine();
-            if (!playerName.isEmpty()) {
-                break;
-            } else {
-                System.out.println("Name cannot be empty. Please enter a valid name.");
-            }
-        }
-
-        char playerSymbol;
-        while (true) {
-            System.out.println("Choose your symbol (X or O):");
-            playerSymbol = Character.toUpperCase(scanner.next().charAt(0));
-            if (playerSymbol == 'X' || playerSymbol == 'O') {
-                break;
-            } else {
-                System.out.println("Invalid symbol! Please choose X or O.");
-            }
-        }
-        scanner.nextLine();
-
-        // Create human player using the factory method
+        String playerName = askPlayerName();
+        char playerSymbol = askPlayerSymbol();
         player1 = PlayerFactory.createHumanPlayer(playerName, playerSymbol);
 
-        int difficultyLevel;
-        while (true) {
-            System.out.println("Choose difficulty level for CPU: 1 for EASY and 2 for HARD");
-            try {
-                difficultyLevel = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
-                if (difficultyLevel == 1 || difficultyLevel == 2) {
-                    break;
-                } else {
-                    System.out.println("Please enter 1 for EASY or 2 for HARD.");
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Please enter a valid number.");
-                scanner.next();
-            }
-        }
-
+        MoveStrategy strategy = askDifficultyLevel();
         char cpuSymbol = (playerSymbol == 'X') ? 'O' : 'X';
-        MoveStrategy strategy = (difficultyLevel == 1)
-                ? MoveStrategyFactory.createStrategy("random")
-                : MoveStrategyFactory.createStrategy("smart");
-
-        // Create CPU player using the factory method
         player2 = PlayerFactory.createCpuPlayer(strategy, cpuSymbol);
     }
 
     public void start() {
-        boolean playAgain = true;
+        boolean playAgain;
 
         do {
-            board.reset();
-            player1.resetPositions();
-            player2.resetPositions();
+            resetGame();
             board.printBoard();
 
             while (true) {
@@ -103,7 +46,79 @@ class Game {
 
         } while (playAgain);
 
-        System.out.println("Okay, Bye bye! \uD83D\uDC4B\uD83C\uDFFB");
+        System.out.println("Okay, Bye bye! 👋");
+    }
+
+    private void resetGame() {
+        board.reset();
+        player1.resetPositions();
+        player2.resetPositions();
+    }
+
+    private int askGridSize() {
+        int size;
+        while (true) {
+            try {
+                System.out.println("Enter the grid size: (3 for 3x3, 4 for 4x4, etc)");
+                size = scanner.nextInt();
+                scanner.nextLine();
+                if (size >= 3) {
+                    return size;
+                } else {
+                    System.out.println("Grid size must be 3 or larger.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a valid number.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    private String askPlayerName() {
+        String playerName;
+        while (true) {
+            System.out.println("So, tell me what's your name?");
+            playerName = scanner.nextLine();
+            if (!playerName.isEmpty()) {
+                return playerName;
+            } else {
+                System.out.println("Name cannot be empty. Please enter a valid name.");
+            }
+        }
+    }
+
+    private char askPlayerSymbol() {
+        char playerSymbol;
+        while (true) {
+            System.out.println("Choose your symbol (X or O):");
+            playerSymbol = Character.toUpperCase(scanner.next().charAt(0));
+            if (playerSymbol == 'X' || playerSymbol == 'O') {
+                return playerSymbol;
+            } else {
+                System.out.println("Invalid symbol! Please choose X or O.");
+            }
+        }
+    }
+
+    private MoveStrategy askDifficultyLevel() {
+        int difficultyLevel;
+        while (true) {
+            System.out.println("Choose difficulty level for CPU: 1 for EASY and 2 for HARD");
+            try {
+                difficultyLevel = scanner.nextInt();
+                scanner.nextLine();
+                if (difficultyLevel == 1) {
+                    return MoveStrategyFactory.createStrategy("random");
+                } else if (difficultyLevel == 2) {
+                    return MoveStrategyFactory.createStrategy("smart");
+                } else {
+                    System.out.println("Please enter 1 for EASY or 2 for HARD.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.nextLine();
+            }
+        }
     }
 
     private boolean takeTurn(Player player) {
@@ -112,13 +127,9 @@ class Game {
         char symbol = player.getSymbol();
         board.placePiece(pos, symbol);
 
-        if (player.equals(player1)) {
-            System.out.println("===================" + player1.getName() + "'s Turn=================");
-            board.printBoard();
-        } else {
-            System.out.println("======================CPU's Turn====================");
-            board.printBoard();
-        }
+        System.out.println(player.getName() + "'s Turn");
+        board.printBoard();
+
         return checkWinner(player.getName());
     }
 
