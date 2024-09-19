@@ -18,11 +18,11 @@ public class HumanPlayer extends Player {
         int maxPos = boardSize * boardSize;
         while (true) {
             try {
-                System.out.println("Enter your move (1-" + (board.getSize() * board.getSize()) + "):");
+                System.out.println("Enter your move (1-" + maxPos + "):");
                 pos = scanner.nextInt();
 
                 if (pos < 1 || pos > maxPos) {
-                    System.out.println("Invalid position! Please enter a number between 1 and " +(board.getSize() * board.getSize()));
+                    System.out.println("Invalid position! Please enter a number between 1 and " +maxPos);
                     continue;
                 }
 
